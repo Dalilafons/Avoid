@@ -7,8 +7,11 @@ Exercises
 3. Vary the speed of the bombs.
 """
 
-from random import *
-from turtle import *
+from random import choice, randrange
+from turtle import (
+    clear, goto, dot, update, ontimer, setup, hideturtle, up,
+    tracer, listen, onkey, done
+)
 
 from freegames import vector
 
@@ -31,11 +34,16 @@ def draw(alive):
     """Draw screen objects."""
     clear()
     goto(player.x, player.y)
-    color = 'blue' if alive else 'red'
-    dot(10, color)
+
+    if alive:
+        dot(10, "blue")
+    else:
+        dot(10, "red")
+
     for bomb in bombs:
         goto(bomb.x, bomb.y)
-        dot(20, 'black')
+        dot(20, "black")
+
     update()
 
 
@@ -48,25 +56,24 @@ def move():
 
     if randrange(10) == 0:
         speed = choice(options).copy()
-        offset = randrange(-199, 200)
+        spawn_offset = randrange(-199, 200)
 
         if speed == north:
-            bomb = vector(offset, -199)
-        if speed == south:
-            bomb = vector(offset, 199)
-        if speed == east:
-            bomb = vector(-199, offset)
-        if speed == west:
-            bomb = vector(199, offset)
+            bomb = vector(spawn_offset, -199)
+        elif speed == south:
+            bomb = vector(spawn_offset, 199)
+        elif speed == east:
+            bomb = vector(-199, spawn_offset)
+        else:
+            bomb = vector(199, spawn_offset)
 
         bombs.append(bomb)
         speeds.append(speed)
 
-    for index in reversed(range(len(bombs))):
-        bomb = bombs[index]
+    for i, (bomb, speed) in enumerate(zip(bombs, speeds)):
         if not inside(bomb):
-            del bombs[index]
-            del speeds[index]
+            del bombs[i]
+            del speeds[i]
 
     if not inside(player):
         draw(False)
@@ -86,9 +93,13 @@ hideturtle()
 up()
 tracer(False)
 listen()
-onkey(lambda: aim.set(north), 'Up')
-onkey(lambda: aim.set(south), 'Down')
-onkey(lambda: aim.set(east), 'Right')
-onkey(lambda: aim.set(west), 'Left')
+
+onkey(lambda: aim.set(north), "Up")
+onkey(lambda: aim.set(south), "Down")
+onkey(lambda: aim.set(east), "Right")
+onkey(lambda: aim.set(west), "Left")
+
 move()
-done()
+
+if __name__ == "__main__":
+    done()
